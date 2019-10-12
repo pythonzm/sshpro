@@ -1,0 +1,23 @@
+---
+all:
+  centos:
+    hosts:
+      - 10.1.7.198
+      - 10.1.7.199
+      - 10.1.7.239: { username: root,password: "123456" }
+    vars:
+      username: zm
+      port: 22
+      password: "123456"
+
+
+  redhat:
+    hosts:
+      - 10.1.7.239
+      - 10.1.7.240
+
+    vars:
+      username: root
+      port: 22
+      password: "123456"
+
