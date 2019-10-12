@@ -1,11 +1,19 @@
 # sshpro
-批量管理工具，阉割版ansible
+批量管理工具，阉割版ansible，支持批量执行命令以及批量复制文件和文件夹
+
+主机与被管理机器无需安装任何依赖，也不用配置互信，直接使用即可
 
 ## 使用
 1. git clone https://github.com/pythonzm/sshpro.git
-2. cd sshpro && go build
+2. 生成可执行文件
 
-当前目录下会生成可执行文件sshpro，将文件链接到bin下：`ln -sv $PWD/sshpro /bin/sshpro`
+```bash
+cd sshpro
+go build
+ln -sv $PWD/sshpro /bin/sshpro  # 将可执行文件链接到/bin目录下，可选
+```
+
+3. （可选，如果需要使用配置文件则需要配置）将配置文件模板复制到$HOME下 `cp .sshpro.yaml $HOME`，然后根据自己的情况修改模板
 
 ### 查看使用帮助
 
@@ -37,4 +45,48 @@ Flags:
       --version             version for sshpro
 
 Use "sshpro [command] --help" for more information about a command.
+```
+
+## 部分使用案例
+
+### 批量执行命令（不使用配置文件）
+```shell
+[root@test sshpro]# sshpro --hosts 10.1.7.239,10.1.7.240 -u root -P 123456 -c uptime
+10.1.7.239 | SUCCESS => 
+ 15:49:08 up 3 days,  5:52,  3 users,  load average: 0.00, 0.01, 0.05
+
+10.1.7.240 | FAILED => dial tcp 10.1.7.240:22: i/o timeout
+```
+
+### 批量执行命令（使用配置文件，需要使用-g参数）
+```shell
+[root@test sshpro]# sshpro -g centos -c uptime    # centos组内主机全部执行uptime命令
+10.1.7.239 | SUCCESS => 
+ 15:52:23 up 3 days,  5:56,  3 users,  load average: 0.00, 0.01, 0.05
+
+10.1.7.198 | SUCCESS => 
+ 15:52:22 up 93 days,  3:49,  4 users,  load average: 0.05, 0.03, 0.00
+
+10.1.7.199 | UNREACHABLE => dial tcp 10.1.7.199:22: connect: no route to host
+```
+
+### 批量复制文件（传递文件夹需要-r参数，不使用配置文件）
+```
+[root@test sshpro]# sshpro copy --hosts 10.1.7.239,10.1.7.238 -u root -P 123456 -s /tmp/aa/a.log -d /tmp/
+10.1.7.239 | SUCCESS => 
+/tmp/aa/a.log 传输完成
+
+10.1.7.238 | UNREACHABLE => dial tcp 10.1.7.238:22: connect: no route to host
+```
+
+### 批量复制文件（传递文件夹需要-r参数，使用配置文件）
+```shell
+[root@test sshpro]# sshpro copy -g centos -s /tmp/aa/a.log -d /tmp/                                                 
+10.1.7.198 | SUCCESS => 
+/tmp/aa/a.log 传输完成
+
+10.1.7.239 | SUCCESS => 
+/tmp/aa/a.log 传输完成
+
+10.1.7.199 | UNREACHABLE => dial tcp 10.1.7.199:22: connect: no route to host
 ```
