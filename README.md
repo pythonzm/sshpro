@@ -9,6 +9,7 @@
 
 ```bash
 cd sshpro
+go mod init
 go build
 ln -sv $PWD/sshpro /bin/sshpro  # 将可执行文件链接到/bin目录下，可选
 ```
