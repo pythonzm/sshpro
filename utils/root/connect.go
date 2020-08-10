@@ -81,7 +81,6 @@ func (c Connection) OutPut(command string, wg *sync.WaitGroup, ch chan bool) (ou
 	}()
 
 	var stdout bytes.Buffer
-	session.Stdout = &stdout
 
 	in, _ := session.StdinPipe()
 
@@ -98,6 +97,8 @@ func (c Connection) OutPut(command string, wg *sync.WaitGroup, ch chan bool) (ou
 			}
 		}
 	}(in, &stdout)
+
+	session.Stdout = &stdout
 
 	if e := session.Run(command); e != nil {
 		r.Status = r.ResultStatus(1)
